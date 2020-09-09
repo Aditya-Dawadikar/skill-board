@@ -44,8 +44,8 @@ async function register() {
         department: department,
         year: year,
         division: division,
-        rollno: rollno
-    }
+        rollno: rollno,
+    };
 
     social = {
         phone: phone,
@@ -53,86 +53,71 @@ async function register() {
         linkedin: linkedin,
         github: github,
         personalwebsite: personalwebsite,
-        resume: resume
-    }
+        resume: resume,
+    };
+
+    // Just complete the logic of array
 
     skills = {
         primaryskill: primaryskill,
         secondaryskill: secondaryskill,
-        //skill: ["nodejs", "java"],
-        //projectsforskills: ["https://github.com/Aditya-Dawadikar", "https://github.com/Aditya-Dawadikar"],
-        cgpa: cgpa
-    }
+        skill: ["nodejs", "java"],
+        projectsforskills: ["https://github.com/Aditya-Dawadikar", "https://github.com/Aditya-Dawadikar"],
+        cgpa: cgpa,
+    };
 
     optionals = {
         introduction: introduction,
         gender: gender,
         age: age,
         mother_tongue: mother_tongue,
-        //languages_known: ['marathi', 'english'],
-    }
+        languages_known: ['marathi', 'english'],
+    };
+
+    // fetching github metaData 
+    const github_metadata_object = await getGithubData();
 
     //create user object
     user = {
-            email: email,
-            password: password,
-            personal: personal,
-            social: social,
-            skills: skills,
-            optionals: optionals,
-            metaData: {}
-        }
-        //console.log(user)
+        email: email,
+        password: password,
+        personal: personal,
+        social: social,
+        skills: skills,
+        optionals: optionals,
+        metaData: {
+            github_metadata_object: github_metadata_object
+        },
+    };
 
-    let url = "http://localhost:3000/api/register/student"
+    // url to send post req
+    let url = "https://skboard.herokuapp.com/api/register/student";
 
-    // fetch(url, {
-    //     method: 'post',
-    //     body: JSON.stringify(user)
-    // }).then(function(response) {
-    //     console.log(response.json());
-    // }).catch(err => {
-    //     alert(err);
-    // })
-    //console.log(JSON.stringify(user));
     const response = await postData(url, user);
-    console.log(response);
+    console.log("Response =>" + response);
 }
 
-async function postData(url = '', data = {}) {
-    // Default options are marked with *
-    const obj = data
-        //console.log(obj);
-        // const body = {
-        //     "personal": obj.personal,
-        //     "social": obj.social,
-        //     "optionals": obj.optionals,
-        //     "skills": obj.skills,
-        //     "metaData": obj.metaData,
-        //     "email": obj.email,
-        //     "password": obj.password
-        // }
-        // console.log(body);
+// Function to fetch github data
+async function getGithubData(user) {
+    const url = `https://api.github.com/users/${social.github.substr(social.github.lastIndexOf('/') + 1)}`
+    const data = await fetch(url);
+    const json = await data.json();
+    return json
+}
+
+// Function to post data
+async function postData(url = "", data) {
     const response = await fetch(url, {
-        method: 'POST', // *GET, POST, PUT, DELETE, etc.
-        mode: 'cors', // no-cors, *cors, same-origin
-        cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+        method: "POST", // *GET, POST, PUT, DELETE, etc.
+        mode: "cors", // no-cors, *cors, same-origin
+        cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
         //credentials: 'same-origin', // include, *same-origin, omit
         headers: {
-            'Content-Type': 'application/json',
-            'Content-Type': 'application/x-www-form-urlencoded',
+            "Content-Type": "application/json",
         },
-        referrerPolicy: 'no-referrer', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
+        referrerPolicy: "no-referrer", // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
         //body: body // body data type must match "Content-Type" header
-        body: {
-            "personal": obj.personal,
-            "social": obj.social,
-            "optionals": obj.optionals,
-            "skills": obj.skills,
-            "metaData": obj.metaData,
-            "email": obj.email,
-            "password": obj.password
-        }
+        body: JSON.stringify(data),
     });
     return response.json(); // parses JSON response into native JavaScript objects
 }

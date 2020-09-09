@@ -1,4 +1,4 @@
-function register() {
+async function register() {
     //personal info
     var email = document.getElementById("email").value;
     var password = document.getElementById("password").value;
@@ -10,7 +10,11 @@ function register() {
     var rollno = document.getElementById("rollno").value;
     //social info
     var phone = document.getElementById("phone").value;
-    var iswhatsapp = document.getElementById("isWhatsapp").value;
+    var flag = document.getElementById("isWhatsapp").value;
+    var iswhatsapp = false;
+    if (flag === "on") {
+        iswhatsapp = true;
+    }
     var linkedin = document.getElementById("linkedin").value;
     var github = document.getElementById("github").value;
     var personalwebsite = document.getElementById("personalWebsite").value;
@@ -55,8 +59,8 @@ function register() {
     skills = {
         primaryskill: primaryskill,
         secondaryskill: secondaryskill,
-        skill: skillArray,
-        projectsforskills: projectArray,
+        //skill: ["nodejs", "java"],
+        //projectsforskills: ["https://github.com/Aditya-Dawadikar", "https://github.com/Aditya-Dawadikar"],
         cgpa: cgpa
     }
 
@@ -65,7 +69,7 @@ function register() {
         gender: gender,
         age: age,
         mother_tongue: mother_tongue,
-        languages_known: languageArray,
+        //languages_known: ['marathi', 'english'],
     }
 
     //create user object
@@ -80,14 +84,55 @@ function register() {
         }
         //console.log(user)
 
-    let url = "https://skboard.herokuapp.com/api/register/student"
+    let url = "http://localhost:3000/api/register/student"
 
-    fetch(url, {
-        method: 'post',
-        body: JSON.stringify(user)
-    }).then(function(response) {
-        console.log(response.json());
-    }).catch(err => {
-        alert(err);
-    })
+    // fetch(url, {
+    //     method: 'post',
+    //     body: JSON.stringify(user)
+    // }).then(function(response) {
+    //     console.log(response.json());
+    // }).catch(err => {
+    //     alert(err);
+    // })
+    //console.log(JSON.stringify(user));
+    const response = await postData(url, user);
+    console.log(response);
+}
+
+async function postData(url = '', data = {}) {
+    // Default options are marked with *
+    const obj = data
+        //console.log(obj);
+        // const body = {
+        //     "personal": obj.personal,
+        //     "social": obj.social,
+        //     "optionals": obj.optionals,
+        //     "skills": obj.skills,
+        //     "metaData": obj.metaData,
+        //     "email": obj.email,
+        //     "password": obj.password
+        // }
+        // console.log(body);
+    const response = await fetch(url, {
+        method: 'POST', // *GET, POST, PUT, DELETE, etc.
+        mode: 'cors', // no-cors, *cors, same-origin
+        cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+        //credentials: 'same-origin', // include, *same-origin, omit
+        headers: {
+            'Content-Type': 'application/json',
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        referrerPolicy: 'no-referrer', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
+        //body: body // body data type must match "Content-Type" header
+        body: {
+            "personal": obj.personal,
+            "social": obj.social,
+            "optionals": obj.optionals,
+            "skills": obj.skills,
+            "metaData": obj.metaData,
+            "email": obj.email,
+            "password": obj.password
+        }
+    });
+    return response.json(); // parses JSON response into native JavaScript objects
 }
